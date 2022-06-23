@@ -1,0 +1,16 @@
+---
+- hosts: databaseservers
+  user: vagrant
+  become: true
+
+  vars_files:
+     - vars/default.yml
+
+  roles:
+    - hosts
+    - common
+    - mongodb
+    - redis
+
+  environment:
+    "{{ (with_proxy) | ternary( proxy_env, {}) }}"   # use proxy_env only when with_proxy is true

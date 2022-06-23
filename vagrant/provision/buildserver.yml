@@ -1,0 +1,25 @@
+---
+- hosts: buildservers
+  user: vagrant
+  become: true
+
+  vars_files:
+     - vars/default.yml
+
+ # HACK: don't rsync & deal with this nasty '/provision' hardcoded directory
+ # pre_tasks:
+ #   - name: Copy provision directory
+ #     copy:
+ #       src: "{{ PROVISION_DIRECTORY }}"
+ #       dest: /
+
+
+  roles:
+    - hosts
+    - common
+    - oracle-java
+    - jenkins
+    - hubot
+
+  environment:
+    "{{ (with_proxy) | ternary( proxy_env, {}) }}"   # use proxy_env only when with_proxy is true
