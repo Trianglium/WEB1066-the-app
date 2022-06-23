@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <actions/>
+  <description>&lt;p&gt;&#13;
+  After running this build the &lt;a href="http://test-shop.microservice.io/" target="_blank"&gt;Microservice TEST Node&lt;/a&gt; should be running. &#13;
+  You can check the Version with the following urls:&#13;
+  &lt;ul&gt;&#13;
+    &lt;li&gt;&lt;a href="http://test-shop.microservice.io/version.txt" target="_blank"&gt;Catalog Frontend Version&lt;/a&gt;&lt;/li&gt;&#13;
+    &lt;li&gt;&lt;a href="http://test-shop.microservice.io/api/cart/manifest" target="_blank"&gt;Cart Microservice Manifest&lt;/a&gt;&lt;/li&gt;&#13;
+    &lt;li&gt;&lt;a href="http://test-shop.microservice.io/api/product/manifest" target="_blank"&gt;Product Microservice Manifest&lt;/a&gt;&lt;/li&gt;&#13;
+    &lt;li&gt;&lt;a href="http://test-shop.microservice.io/api/navigation/manifest" target="_blank"&gt;Navigation Microservice Manifest&lt;/a&gt;&lt;/li&gt;&#13;
+  &lt;/ul&gt;&#13;
+&lt;/p&gt;&#13;
+</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>5</daysToKeep>
+    <numToKeep>5</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(Default)</jdk>
+  <triggers>
+    <jenkins.triggers.ReverseBuildTrigger>
+      <spec/>
+      <upstreamProjects>shop-microservice-publish</upstreamProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </jenkins.triggers.ReverseBuildTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command/>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>ssh vagrant@app-server-node-3 -o StrictHostKeyChecking=no -v &lt;&lt;EOF
+sudo su
+apt-get update
+apt-get autoclean
+ROLE_FLAG_FILE=/etc/server_role
+SERVER_ROLE=test
+if [ ! -f \$ROLE_FLAG_FILE ]
+then
+    echo "\$SERVER_ROLE" > \$ROLE_FLAG_FILE
+else
+    ROLE="\$(cat \$ROLE_FLAG_FILE)"
+    if [ "\$ROLE" != "\$SERVER_ROLE" ]
+    then
+        echo "Deployment ERROR! Mismatch between deployment role and the server role. This system is tagged '\$ROLE' and you are trying to deploy as '\$SERVER_ROLE'."
+        exit 1
+    fi
+fi
+echo "Deploying to \$SERVER_ROLE server..."
+dpkg --remove --force-all shop-registration-frontend
+dpkg --remove --force-all shop-catalog-frontend
+dpkg --remove --force-all shop-checkout-frontend
+dpkg --remove --force-all shop-product-service
+dpkg --remove --force-all shop-navigation-service
+dpkg --remove --force-all shop-cart-service
+apt-get -y install dialog apt-utils
+apt-get -y install shop-registration-frontend
+apt-get -y install shop-catalog-frontend
+apt-get -y install shop-checkout-frontend
+apt-get -y install shop-product-service
+apt-get -y install shop-navigation-service
+apt-get -y install shop-cart-service
+EOF</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.chucknorris.CordellWalkerRecorder plugin="chucknorris@0.5">
+      <factGenerator/>
+    </hudson.plugins.chucknorris.CordellWalkerRecorder>
+  </publishers>
+  <buildWrappers/>
+</project>

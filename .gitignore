@@ -1,0 +1,9 @@
+*.log
+*~
+*.retry
+.idea
+**/.gradle
+**/build/
+.vagrant
+.settings
+.project
