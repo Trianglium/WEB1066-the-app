@@ -1,0 +1,19 @@
+---
+- hosts: elasticsearchservers
+  user: vagrant
+  sudo: yes
+
+  vars_files:
+     - vars/default.yml
+
+  roles:
+    - hosts
+    - common
+    - oracle-java
+    - elasticsearch
+    - kibana
+    - nagios-server
+    - icinga
+
+  environment:
+    "{{ (with_proxy) | ternary( proxy_env, {}) }}"   # use proxy_env only when with_proxy is true

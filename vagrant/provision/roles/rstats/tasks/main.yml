@@ -1,0 +1,15 @@
+---
+- name: install rstats key file
+  apt_key: data="{{ lookup('file', 'rstats.key.txt') }}" state=present
+
+- name: add rstats repository into sources list.
+  apt_repository: repo='deb https://cran.rstudio.com/bin/linux/ubuntu xenial/' state=present
+
+- name: update cache
+  apt: update_cache=yes force=yes
+
+- name: install rstats
+  apt: pkg={{item}} state=present force=yes
+  with_items:
+    - r-base
+    - r-recommended

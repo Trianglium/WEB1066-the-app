@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+chmod +x /usr/share/shop/cart/bin/cart
+update-rc.d cart remove
+rm -f /etc/init.d/cart
+
+systemctl daemon-reload
+systemctl enable cart.service
+
+service cart restart
