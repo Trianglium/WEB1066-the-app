@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+chmod +x /usr/share/shop/product/bin/product
+update-rc.d product remove
+rm -f /etc/init.d/product
+
+systemctl daemon-reload
+systemctl enable product.service
+systemctl daemon-reload
+service product restart

@@ -1,0 +1,34 @@
+jar.baseName = "redis-cart-microservice-repository"
+
+idea {
+    module {
+        name='redis-cart-microservice-repository'
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/java'
+            srcDir 'src/main/resources'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
+}
+
+test {
+    testLogging {
+        showStandardStreams = false
+        events "started", "skipped", "failed", "passed"
+    }
+}
+
+dependencies {
+    compile project(':monolithic:repository:common')
+
+    testCompile testDeps
+}
