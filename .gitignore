@@ -1,0 +1,6 @@
+*.log
+*~
+*.retry
+.idea
+**/.gradle
+**/build/

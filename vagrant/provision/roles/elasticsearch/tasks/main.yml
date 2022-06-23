@@ -1,0 +1,31 @@
+---
+- name: install elasticsearch key file
+  apt_key: url=http://packages.elasticsearch.org/GPG-KEY-elasticsearch state=present
+
+- name: add elasticsearch repository into sources list.
+  apt_repository: repo='deb http://packages.elasticsearch.org/elasticsearch/{{elasticsearch_version}}/debian stable main' state=present
+
+- name: update cache
+  apt: update_cache=yes force=yes cache_valid_time=3600
+
+- name: install elasticsearch
+  apt: pkg=elasticsearch state=present force=yes cache_valid_time=3600
+
+- raw: sudo update-rc.d elasticsearch defaults
+- raw: sudo sed -i 's/#START_DAEMON/START_DAEMON/' /etc/default/elasticsearch
+- raw: sudo chown -R elasticsearch:elasticsearch /usr/share/elasticsearch/data
+
+- name: insert/update elasticsearch configuration block
+  blockinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    block: |
+      http.cors.enabled: true
+      http.cors.allow-origin: http://monitoring.microservice.io
+
+- name: Setup unique elasticsearch cluster name
+  lineinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    regexp: '#cluster.name:\ elasticsearch'
+    line: 'cluster.name: "{{ 100 | random | to_uuid }}"'
+
+- raw: sudo service elasticsearch restart

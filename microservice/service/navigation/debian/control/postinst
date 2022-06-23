@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+chmod +x /usr/share/shop/navigation/bin/navigation
+update-rc.d navigation remove
+rm -f /etc/init.d/navigation
+
+systemctl daemon-reload
+systemctl enable navigation.service
+systemctl daemon-reload
+service navigation restart
